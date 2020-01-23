@@ -6,7 +6,7 @@
 /*   By: apavel <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 12:15:29 by apavel            #+#    #+#             */
-/*   Updated: 2020/01/23 10:58:10 by apavel           ###   ########.fr       */
+/*   Updated: 2020/01/23 12:25:09 by apavel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,24 @@ int get_next_line(int fd, char **line)
 	char *string;
 	char buff[BUFFER_SIZE];
 	int	b;
-	if (fd == -1)
+
+	//Comprobar si pasan fd vacio
+	if (fd < 0)
 		return (-1);
-	while (ft_exists_new_line(buff) == 0)
-	{
-		write(1, buff, BUFFER_SIZE);
-		b = read(fd, &buff, BUFFER_SIZE);
+
+	//Comprobar si hay algo en el resto y agregarlo al string
+	
+	while ((b = read(fd, buff, BUFFER_SIZE)) > 0)
+	{		
+		write(1, buff, BUFFER_SIZE);//DEBUG: imprime
+		if (ft_get_new_line(buff) == 0)
+		{
+			string = ft_strjoin(string, buff);
+			
+		}
 	}
-		
-	return 0;
+
+	return (0);
 }
 
 int main()
@@ -38,6 +47,6 @@ int main()
 	
 	get_next_line(arch, &line);
 	
-	//char *str = "Hola que tal";
+	//char *str = "Hola\nque tal";
 	//printf("%d", ft_exists_new_line(str));
 }
