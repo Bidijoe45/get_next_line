@@ -24,10 +24,10 @@ int		ft_get_new_line(char *str)
 		i++;
 	}
 
-	return (0);
+	return (-1);
 }
 
-char    *ft_strjoin(const char *s1, const char *s2)
+char    *ft_strjoin(char *s1, char *s2)
 {
     char    *ptr;
     size_t  i;
@@ -48,8 +48,6 @@ char    *ft_strjoin(const char *s1, const char *s2)
         j++;
     }
     ptr[j] = '\0';
-	free(s1);
-	free(s2);
     return (ptr);
 }
 
@@ -63,7 +61,7 @@ size_t  ft_strlen(const char *str)
     return (i);
 }
 
-char    *ft_strdup(const char *s1)
+char    *ft_strdup(char *s1)
 {
     char    *ptr;
     size_t  i;

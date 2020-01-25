@@ -17,12 +17,12 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-int		get_next_line(int fd, char **line);
+int	get_next_line(int fd, char **line);
 
-int		ft_get_new_line(char *str);
-char	*ft_strjoin(const char *s1, const char *s2);
+int	ft_get_new_line(char *str);
+char	*ft_strjoin(char *s1, char *s2);
 size_t	ft_strlen(const char *str);
-char	*ft_strdup(const char *s1);
+char	*ft_strdup(char *s1);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
 
 #endif

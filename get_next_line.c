@@ -17,25 +17,46 @@
 int get_next_line(int fd, char **line)
 {
 	static char *resto;
-	char *string;
-	char buff[BUFFER_SIZE];
+	char buff[BUFFER_SIZE + 1];
 	int	b;
-
-	//Comprobar si pasan fd vacio
+	char *string;
+	char *tmp_str;
+	
 	if (fd < 0)
 		return (-1);
-
-	//Comprobar si hay algo en el resto y agregarlo al string
 	
-	while ((b = read(fd, buff, BUFFER_SIZE)) > 0)
+	string = 0;
+
+	while (b = read(fd, &buff, BUFFER_SIZE))
 	{		
-		write(1, buff, BUFFER_SIZE);//DEBUG: imprime
-		if (ft_get_new_line(buff) == 0)
+		printf("BUFF:|%s|\n", buff);
+		buff[b] = '\0';
+		if (ft_get_new_line(buff) == -1)
 		{
-			string = ft_strjoin(string, buff);
+			if (string == 0)
+				string = ft_strdup(buff);
+			else
+			{
+				tmp_str = ft_strdup(string);
+				free(string);
+				string = ft_strjoin(tmp_str, buff);
+				free(tmp_str);
+			}
+		}
+		else
+		{
+			resto = ft_substr(buff, ft_get_new_line(buff) + 1, b);
+			printf("Resto:|%s|\n", resto);
+			tmp_str = ft_strdup(string);
+			free(string);
 			
+			break ;
 		}
 	}
+	
+
+	*line = ft_strdup(string);
+	free(string);
 
 	return (0);
 }
@@ -44,9 +65,10 @@ int main()
 {
 	char	*line;
 	int arch = open("arch", O_RDONLY);
-	
 	get_next_line(arch, &line);
-	
-	//char *str = "Hola\nque tal";
-	//printf("%d", ft_exists_new_line(str));
+	printf("String: %s\n", line);
+
 }
+
+
+

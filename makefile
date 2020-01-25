@@ -13,4 +13,4 @@
 SRCS = get_next_line.c get_next_line_utils.c
 FLAGS = -Wall -Werror -Wextra
 all: ${OBJS}
-	gcc  ${SRCS} -o gnl -D BUFFER_SIZE=4
+	gcc  ${SRCS} -o gnl -D BUFFER_SIZE=3
