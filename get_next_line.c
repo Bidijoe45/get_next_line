@@ -6,13 +6,15 @@
 /*   By: apavel <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 12:15:29 by apavel            #+#    #+#             */
-/*   Updated: 2020/01/23 12:25:09 by apavel           ###   ########.fr       */
+/*   Updated: 2020/01/27 14:29:07 by apavel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 #include <stdio.h>
+
+
 
 int get_next_line(int fd, char **line)
 {
@@ -24,12 +26,14 @@ int get_next_line(int fd, char **line)
 	
 	if (fd < 0)
 		return (-1);
-	
 	string = 0;
-
-	while (b = read(fd, &buff, BUFFER_SIZE))
-	{		
-		printf("BUFF:|%s|\n", buff);
+	if (resto)
+	{
+		string = ft_strdup(resto);
+		free(resto);
+	}
+	while ((b = read(fd, &buff, BUFFER_SIZE)))
+	{
 		buff[b] = '\0';
 		if (ft_get_new_line(buff) == -1)
 		{
@@ -46,18 +50,12 @@ int get_next_line(int fd, char **line)
 		else
 		{
 			resto = ft_substr(buff, ft_get_new_line(buff) + 1, b);
-			printf("Resto:|%s|\n", resto);
-			tmp_str = ft_strdup(string);
+			*line = ft_strdup(string);
 			free(string);
-			
-			break ;
+			return (1);
 		}
 	}
 	
-
-	*line = ft_strdup(string);
-	free(string);
-
 	return (0);
 }
 
@@ -65,10 +63,23 @@ int main()
 {
 	char	*line;
 	int arch = open("arch", O_RDONLY);
-	get_next_line(arch, &line);
-	printf("String: %s\n", line);
+	printf("get return: %d\n", get_next_line(arch, &line));
+	printf("String: |%s|\n", line);
+	
+	printf("get return: %d\n", get_next_line(arch, &line));
+	printf("String: |%s|\n", line);
+	
+	printf("get return: %d\n", get_next_line(arch, &line));
+	printf("String: |%s|\n", line);
 
+	printf("get return: %d\n", get_next_line(arch, &line));
+	printf("String: |%s|\n", line);
+
+	printf("get return: %d\n", get_next_line(arch, &line));
+	printf("String: |%s|\n", line);
+	
+	printf("get return: %d\n", get_next_line(arch, &line));
+	printf("String: |%s|\n", line);
 }
-
 
 
