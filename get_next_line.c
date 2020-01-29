@@ -6,7 +6,7 @@
 /*   By: apavel <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 12:15:29 by apavel            #+#    #+#             */
-/*   Updated: 2020/01/27 14:29:07 by apavel           ###   ########.fr       */
+/*   Updated: 2020/01/29 17:41:34 by apavel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,71 +15,89 @@
 #include <stdio.h>
 
 
-
 int get_next_line(int fd, char **line)
 {
-	static char *resto;
+	static char	*rest[4092];
 	char buff[BUFFER_SIZE + 1];
 	int	b;
-	char *string;
 	char *tmp_str;
-	
-	if (fd < 0)
+
+	if (fd < 0 || !fd || read(fd, buff, 0) < 0)
 		return (-1);
-	string = 0;
-	if (resto)
-	{
-		string = ft_strdup(resto);
-		free(resto);
-	}
-	while ((b = read(fd, &buff, BUFFER_SIZE)))
+	
+	while ((b = read(fd, buff, BUFFER_SIZE)) > 0)
 	{
 		buff[b] = '\0';
+		//printf("bytes read %d\n", b);
 		if (ft_get_new_line(buff) == -1)
 		{
-			if (string == 0)
-				string = ft_strdup(buff);
+			if (!rest[fd])
+			{
+				rest[fd] = ft_strdup(buff);
+			}
 			else
 			{
-				tmp_str = ft_strdup(string);
-				free(string);
-				string = ft_strjoin(tmp_str, buff);
+				tmp_str = ft_strdup(rest[fd]);
+				free(rest[fd]);
+				rest[fd] = ft_strjoin(tmp_str, buff);
 				free(tmp_str);
 			}
 		}
 		else
 		{
-			resto = ft_substr(buff, ft_get_new_line(buff) + 1, b);
-			*line = ft_strdup(string);
-			free(string);
+			tmp_str = ft_substr(buff, 0, ft_get_new_line(buff));
+			*line = ft_strjoin(rest[fd], tmp_str);
+			free(tmp_str);
+			free(rest[fd]);
+			rest[fd] = ft_substr(buff, ft_get_new_line(buff) + 1, ft_strlen(buff) - ft_get_new_line(buff));
+			if (b < BUFFER_SIZE)
+				return (0);
 			return (1);
 		}
 	}
-	
+
 	return (0);
 }
 
+
 int main()
 {
-	char	*line;
-	int arch = open("arch", O_RDONLY);
-	printf("get return: %d\n", get_next_line(arch, &line));
-	printf("String: |%s|\n", line);
-	
-	printf("get return: %d\n", get_next_line(arch, &line));
-	printf("String: |%s|\n", line);
-	
-	printf("get return: %d\n", get_next_line(arch, &line));
-	printf("String: |%s|\n", line);
 
-	printf("get return: %d\n", get_next_line(arch, &line));
-	printf("String: |%s|\n", line);
+    int             fd;
+    int             i;
+    int             j;
+    char            *line = 0;
+    char            *lineadress[66];
 
-	printf("get return: %d\n", get_next_line(arch, &line));
-	printf("String: |%s|\n", line);
-	
-	printf("get return: %d\n", get_next_line(arch, &line));
-	printf("String: |%s|\n", line);
+    j = 1;
+
+    printf("\n==========================================\n");
+    printf("========== TEST 1 : The Alphabet =========\n");
+    printf("==========================================\n\n");
+
+    if (!(fd = open("arch", O_RDONLY)))
+    {
+        printf("\nError in open\n");
+        return (0);
+    }
+    while ((i = get_next_line(fd, &line)) > 0)
+    {
+        printf("i: %d |%s|\n", i, line);
+        lineadress[j - 1] = line;
+        j++;
+    }
+	printf("i: %d |%s|\n", i, line);
+    free(line);
+    close(fd);
+
+    if (i == -1)
+        printf ("\nError in Fonction - Returned -1\n");
+    else if (j == 66)
+        printf("\nRight number of lines\n");
+    else if (j != 66)
+        printf("\nNot Good - Wrong Number Of Lines\n");
+    while (--j > 0)
+        free(lineadress[j - 1]);
+
+	return (1);
 }
-
-
