@@ -6,7 +6,7 @@
 /*   By: apavel <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 12:15:29 by apavel            #+#    #+#             */
-/*   Updated: 2020/01/30 14:08:16 by apavel           ###   ########.fr       */
+/*   Updated: 2020/02/10 15:24:27 by apavel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,108 +14,87 @@
 
 #include <stdio.h>
 
-int get_next_line(int fd, char **line)
+static int	verify_stack(char **stack, char **line)
 {
-	static char	*stack[4092];
-	char buff[BUFFER_SIZE + 1];
 	char *tmp_str;
-	int	b;	
-	
-	if (fd < 0 || read(fd, buff, 0) == -1 || !line)
-		return (-1);
-	
-	/*
-	 *	------
-	 * Hola que
-	 * que tal
-	 *	-------
-	 *	
-	 *	BUFF: Hola que\nque tal
-	 *	STATIC: 
-	 *
-	 *	LINE: Hola que\0
-	 *
-	 *
-	 *
-	 */
 
-	//Comprobar si hay algo en static
-	
-
-	//Leer archivo y guardar hasta /n
-	
-	while ((b = read(fd, buff, BUFFER_SIZE)) > 0)
+	if (ft_strchr(*stack, '\n'))
 	{
-		buff[b] = '\0';
-		//Si existe un salto de linea em buff salimos del bucle
-		//	if (!stack[fd])
-		//		stack[fd] = ft_strdup(buff);
-//			
-		if (ft_get_new_line(buff) == -1)
-		{
-//			if (!stack[fd])
-//				stack[fd] = ft_strdup(buff);
-//			else
-//			{
-				tmp_str = ft_strdup(stack[fd]);
-				free(stack[fd]);
-				stack[fd] = ft_strjoin(tmp_str, buff);
-				free(tmp_str);
-//			}
-		}
-		else
-		{
-			*line = ft_substr(stack[fd], 0, ft_get_new_line(stack[fd]));
-			free(stack[fd]);
-	//		tmp_str = ft_strdup(&buff[ft_get_new_line(buff)])
-	//		stack[fd] = ft_strdup(tmp_str);
-			break ;
-		}
-	
+		*line = ft_substr(*stack, 0, ft_strlen(*stack) -
+				ft_strlen(ft_strchr(*stack, '\n')));
+		tmp_str = *stack;
+		*stack = ft_strdup(ft_strchr(tmp_str, '\n') + 1);
+		free(tmp_str);
+		return (1);
 	}
-
-	return (1);
+	else
+		return (0);
 }
 
+static int	read_line(int fd, char **stack)
+{
+	char	*buff;
+	int		bytes;
+	char	*tmp_str;
+
+	if (!(buff = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1))))
+		return (-1);
+	while ((bytes = read(fd, buff, BUFFER_SIZE)) > 0)
+	{
+		buff[bytes] = '\0';
+		if (stack[fd])
+		{
+			tmp_str = stack[fd];
+			stack[fd] = ft_strjoin(tmp_str, buff);
+			free(tmp_str);
+		}
+		else
+			stack[fd] = ft_strdup(buff);
+		if (ft_strchr(buff, '\n'))
+			break ;
+	}
+	free(buff);
+	return (bytes);
+}
+
+int			get_next_line(int fd, char **line)
+{
+	static char		*stack[4096];
+	int				ret;
+
+	if (fd < 0 || read(fd, stack[fd], 0) == -1 || !line || BUFFER_SIZE <= 0)
+		return (-1);
+	if (stack[fd])
+		if (verify_stack(&stack[fd], line))
+			return (1);
+	ret = read_line(fd, stack);
+	if (ret == 0 && !stack[fd])
+	{
+		*line = ft_strdup("");
+		return (0);
+	}
+	if (verify_stack(&stack[fd], line))
+		return (1);
+	if (!ft_strchr(stack[fd], '\n'))
+	{
+		*line = ft_strdup(stack[fd]);
+		free(stack[fd]);
+		stack[fd] = NULL;
+		return (0);
+	}
+	return (0);
+}
 
 int main()
 {
+	int file = open("hola", O_RDONLY);
+	int i = 1;
+	char *line;
 
-    int             fd;
-    int             i;
-    int             j;
-    char            *line = 0;
-    char            *lineadress[66];
-
-    j = 1;
-
-    printf("\n==========================================\n");
-    printf("========== TEST 1 : The Alphabet =========\n");
-    printf("==========================================\n\n");
-
-    if (!(fd = open("arch", O_RDONLY)))
-    {
-        printf("\nError in open\n");
-        return (0);
-    }
-    while ((i = get_next_line(fd, &line)) > 0)
-    {
-        printf("i: %d |%s|\n", i, line);
-        lineadress[j - 1] = line;
-        j++;
-    }
-	printf("i: %d |%s|\n", i, line);
-    free(line);
-    close(fd);
-
-    if (i == -1)
-        printf ("\nError in Fonction - Returned -1\n");
-    else if (j == 66)
-        printf("\nRight number of lines\n");
-    else if (j != 66)
-        printf("\nNot Good - Wrong Number Of Lines\n");
-    while (--j > 0)
-        free(lineadress[j - 1]);
-
-	return (1);
+	while (i == 1)
+	{
+		i = get_next_line(file, &line);
+		printf("%s\n", line);
+		free(line);
+	}
 }

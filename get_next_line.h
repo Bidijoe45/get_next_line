@@ -6,7 +6,7 @@
 /*   By: apavel <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 12:16:57 by apavel            #+#    #+#             */
-/*   Updated: 2020/01/23 12:25:17 by apavel           ###   ########.fr       */
+/*   Updated: 2020/02/10 15:12:12 by apavel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-int	get_next_line(int fd, char **line);
+int		get_next_line(int fd, char **line);
 
-int	ft_get_new_line(char *str);
+char	*ft_strchr(const char *s, int c);
 char	*ft_strjoin(char *s1, char *s2);
 size_t	ft_strlen(const char *str);
 char	*ft_strdup(char *s1);
