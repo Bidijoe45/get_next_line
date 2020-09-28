@@ -84,17 +84,3 @@ int			get_next_line(int fd, char **line)
 	}
 	return (0);
 }
-
-int main()
-{
-	int file = open("hola", O_RDONLY);
-	int i = 1;
-	char *line;
-
-	while (i == 1)
-	{
-		i = get_next_line(file, &line);
-		printf("%s\n", line);
-		free(line);
-	}
-}
